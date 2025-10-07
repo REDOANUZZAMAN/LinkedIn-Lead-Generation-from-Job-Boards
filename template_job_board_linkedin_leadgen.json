@@ -1,0 +1,2147 @@
+{
+  "name": "template_job_board_linkedin_leadgen",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "# https://github.com/REDOANUZZAMAN",
+        "height": 80,
+        "width": 688,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        6672,
+        3840
+      ],
+      "typeVersion": 1,
+      "id": "414eaa7c-6930-43f5-85e0-8a5ca623cb9e",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        3696,
+        4352
+      ],
+      "id": "921beeb7-bba8-43b8-af05-51b8e701d4c0",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nfor (const item of $input.all()) {\n  if (item.json.area_html) {\n    const parts = item.json.area_html.split('<span class=\"before:middot\"></span>');\n  item.json.area = parts?.[0]?.trim()\n  item.json.followers = parts?.[1]?.trim()\n  }\n}\n\nreturn $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        9856,
+        3728
+      ],
+      "id": "9aac7d07-0167-4c75-8cde-f0bad69fde97",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "definitions",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        8576,
+        4112
+      ],
+      "id": "4af5c1d6-28d0-4129-9978-64cf9b605515",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "operation": "extractHtmlContent",
+        "dataPropertyName": "definitions",
+        "extractionValues": {
+          "values": [
+            {
+              "key": "key",
+              "cssSelector": "dt"
+            },
+            {
+              "key": "value",
+              "cssSelector": "dd"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        8784,
+        4112
+      ],
+      "id": "24642be8-b1d3-41ea-b57e-a2602017446a",
+      "name": "HTML5"
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = {};\n// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nfor (const item of $input.all()) {\n  let value = item.json.value;\n  const key = item.json.key;\n  if (key === 'Website') {\n    value = value.split('\\n')[0]\n  }\n  data[item.json.key] = value;\n}\n\nreturn {\n  ...data,\n  description: $('Extract about us').first().json.description\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        9040,
+        4144
+      ],
+      "id": "165dd488-c4f1-4a27-b4c4-697b0c975f0a",
+      "name": "Code2"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "employee",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        8544,
+        4432
+      ],
+      "id": "501631af-507d-4d3f-996a-c0841087517c",
+      "name": "Split Out1"
+    },
+    {
+      "parameters": {
+        "operation": "extractHtmlContent",
+        "dataPropertyName": "employee",
+        "extractionValues": {
+          "values": [
+            {
+              "key": "name",
+              "cssSelector": "h3"
+            },
+            {
+              "key": "title",
+              "cssSelector": "h4"
+            },
+            {
+              "key": "linkedin_url",
+              "cssSelector": "a",
+              "returnValue": "attribute",
+              "attribute": "href"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        8912,
+        4464
+      ],
+      "id": "b4b4c228-8b6a-4b28-9cc6-3ce2eb3ee59a",
+      "name": "HTML7"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "employees",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        9264,
+        4496
+      ],
+      "id": "03f98a51-a453-4091-a82f-a23320b64821",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "article",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        8512,
+        4832
+      ],
+      "id": "6147203c-5c9b-4143-8d5d-5eba345b4065",
+      "name": "Split Out2"
+    },
+    {
+      "parameters": {
+        "operation": "extractHtmlContent",
+        "dataPropertyName": "article",
+        "extractionValues": {
+          "values": [
+            {
+              "key": "link",
+              "cssSelector": ".main-feed-card__overlay-link",
+              "returnValue": "attribute",
+              "attribute": "href"
+            },
+            {
+              "key": "content",
+              "cssSelector": "[data-test-id=\"main-feed-activity-card__commentary\"]"
+            },
+            {
+              "key": "reshared_content",
+              "cssSelector": "[data-test-id=\"feed-reshare-content__commentary\"]"
+            },
+            {
+              "key": "time",
+              "cssSelector": "time",
+              "skipSelectors": "span"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        8800,
+        4832
+      ],
+      "id": "d3be1996-95d9-4296-8a05-fb627f20ca1e",
+      "name": "HTML9"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nfor (const item of $input.all()) {\n  Object.keys(item.json).forEach(key => {\n    if (!item.json[key]) {\n      delete item.json[key]\n    }\n  })\n  \n  let time;\n  if (item.json.time.endsWith('h')) {\n    time = { hours: parseInt(item.json.time) }\n  }\n  else if (item.json.time.endsWith('d')) {\n    time = { days: parseInt(item.json.time) }\n  } else if (item.json.time.endsWith('w')) {\n    time = { weeks: parseInt(item.json.time) }\n  } else if (item.json.time.endsWith('mo')) {\n    time = { months: parseInt(item.json.time) }\n  }\n\n  if (time) {\n    item.json.posted_at = $now.minus(time).toFormat('yyyy-MM-dd')\n  }\n\n  delete item.json.time\n}\n\nreturn $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        9136,
+        4832
+      ],
+      "id": "537617ec-1aaf-4785-9223-845cfa85a0b4",
+      "name": "Code3"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "db889fcb-eb49-4c25-aed7-19d00c63c23c",
+              "leftValue": "={{ DateTime.fromISO($json.posted_at).toSeconds() }}",
+              "rightValue": "={{ $now.minus(3, 'months').toSeconds() }}",
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        9424,
+        4832
+      ],
+      "id": "710b156a-824e-4517-973b-fab544dfb73c",
+      "name": "Filter1"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "updates",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        9680,
+        4768
+      ],
+      "id": "5f22601d-1cf7-44dc-ac3a-f741ac9e12b9",
+      "name": "Aggregate1"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "products",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        9232,
+        5088
+      ],
+      "id": "1d862d44-f546-4a00-9744-d864745f1577",
+      "name": "Aggregate2"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "products",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        8704,
+        5472
+      ],
+      "id": "932a6a7b-c94e-4ac8-9073-6899edb3484f",
+      "name": "Split Out3"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "affiliate_pages",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        8704,
+        5872
+      ],
+      "id": "dc28fee1-a2d8-409a-96b2-d74770c5b802",
+      "name": "Split Out4"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "affiliate_pages",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        9360,
+        5872
+      ],
+      "id": "d31b663b-133c-401b-90f5-838f82b32c53",
+      "name": "Aggregate4"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "numberInputs": 7,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        10416,
+        4608
+      ],
+      "id": "ba01edf1-90b1-4a32-8e8b-e478d998bbc0",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        10640,
+        4688
+      ],
+      "id": "e67c0742-f6b1-43ea-bdb6-d11b7e1dbd05",
+      "name": "Aggregate3"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        11520,
+        5456
+      ],
+      "id": "9210ba10-f499-45d1-a5c9-5afed71f7440",
+      "name": "OpenAI Chat Model"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n    \"type\": \"object\",\n    \"properties\": {\n        \"company_summary\": {\n            \"type\": \"string\",\n            \"description\": \"The summary of the company information\"\n        },\n        \"why_good_prospect\": {\n            \"type\": \"string\",\n            \"description\": \"Explanation why this company is a good prospect\"\n        }\n    },\n    \"required\": [\n        \"company_summary\",\n        \"why_good_prospect\"\n    ]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        11696,
+        5456
+      ],
+      "id": "3fd36cd6-ade5-40ba-b3d7-12225c82e56e",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        5024,
+        4352
+      ],
+      "id": "ef43d276-d361-4c8d-98fb-45f7718a66a4",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "maxItems": 2
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        4672,
+        4352
+      ],
+      "id": "e55fdc51-9072-40c1-a6bc-b48d3f1c4bb9",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "content": "# Change or remove the limit",
+        "height": 440,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        4624,
+        4144
+      ],
+      "id": "84f1e536-c3b9-4d86-aa31-f797dc897cd8",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "baa6e64d-4305-421a-be0a-60cc6d2b06bf",
+              "name": "GOOGLE_API_KEY",
+              "value": "{YOUR_GOOGLE_API_KEY}",
+              "type": "string"
+            },
+            {
+              "id": "d8e33d4c-b790-488f-a57c-58b80bb5824d",
+              "name": "GOOGLE_CUSTOM_SEARCH",
+              "value": "{YOUR_GOOGLE_CUSTOM_SEARCH_ID}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        4080,
+        4352
+      ],
+      "id": "21b02d2e-d80e-4814-bae8-56047a9b6ef5",
+      "name": "Configure"
+    },
+    {
+      "parameters": {
+        "url": "https://remotive.com/remote-jobs/feed/marketing",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.1,
+      "position": [
+        4384,
+        4352
+      ],
+      "id": "4d33b15d-2c2a-4df6-a35d-5900269322b9",
+      "name": "Get job board RSS feed",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.link }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        5440,
+        4368
+      ],
+      "id": "2a5689f2-5f50-4634-b18a-bb01ffb7ac69",
+      "name": "Scrape the job ad",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "operation": "extractHtmlContent",
+        "extractionValues": {
+          "values": [
+            {
+              "key": "info",
+              "cssSelector": ".tw-mt-4.tw-text-sm"
+            },
+            {
+              "key": "job_ad",
+              "cssSelector": ".tw-flex > section > .tw-mt-8 > .left > div:nth-child(1)"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        5824,
+        4368
+      ],
+      "id": "f1bade75-529c-4116-b91b-34e9a58eddc2",
+      "name": "Extract job ad"
+    },
+    {
+      "parameters": {
+        "url": "https://www.googleapis.com/customsearch/v1",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "key",
+              "value": "={{ $('Configure').item.json.GOOGLE_API_KEY }}"
+            },
+            {
+              "name": "cx",
+              "value": "={{ $('Configure').item.json.GOOGLE_CUSTOM_SEARCH }}"
+            },
+            {
+              "name": "q",
+              "value": "={{ `site:linkedin.com/company ${$('Get job board RSS feed').item.json['dc:creator']} ${$json.location}` }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        5440,
+        4864
+      ],
+      "id": "2dfb4957-5c84-4136-8cf3-62b5524dd1aa",
+      "name": "Google X-Ray Search",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "6a5c5157-a1de-46c9-b6fa-c3f999a76d1e",
+              "leftValue": "={{ $json.searchInformation.totalResults.toNumber() }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            },
+            {
+              "id": "ec5a091f-e9c1-4ed5-8e0e-af7ddcccf0db",
+              "leftValue": "={{ $json.items[0].link }}",
+              "rightValue": "linkedin.com",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        5664,
+        4864
+      ],
+      "id": "014bd999-f0fc-4df3-aac4-e35a3adc8b03",
+      "name": "Results?"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.linkedin_url }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "user-agent",
+              "value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36"
+            },
+            {
+              "name": "referer",
+              "value": "https://www.google.com/"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        6336,
+        4848
+      ],
+      "id": "f57bac8d-412a-4382-8c3a-ee15e34e2693",
+      "name": "Scrape LinkedIn",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "operation": "extractHtmlContent",
+        "extractionValues": {
+          "values": [
+            {
+              "key": "about_us",
+              "cssSelector": ".core-section-container[data-test-id=\"about-us\"]",
+              "returnValue": "html"
+            },
+            {
+              "key": "locations",
+              "cssSelector": ".core-section-container.locations",
+              "returnValue": "html"
+            },
+            {
+              "key": "employees",
+              "cssSelector": ".core-section-container[data-test-id=\"employees-at\"]",
+              "returnValue": "html"
+            },
+            {
+              "key": "updates",
+              "cssSelector": ".core-section-container[data-test-id=\"updates\"]",
+              "returnValue": "html"
+            },
+            {
+              "key": "info",
+              "cssSelector": ".top-card-layout__card .top-card-layout__entity-info:nth-child(1)",
+              "returnValue": "html"
+            },
+            {
+              "key": "products",
+              "cssSelector": ".core-section-container > .core-section-container__content > .base-card",
+              "returnValue": "html",
+              "returnArray": true
+            },
+            {
+              "key": "crunchbase",
+              "cssSelector": "a[data-tracking-control-name=\"funding_crunchbase\"]",
+              "returnValue": "attribute",
+              "attribute": "href"
+            },
+            {
+              "key": "affiliate_pages",
+              "cssSelector": "section[data-test-id=\"affiliated-pages\"] > div > ul > li",
+              "returnValue": "html",
+              "returnArray": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        6800,
+        4848
+      ],
+      "id": "dd4c9e6b-bb6b-41eb-a716-8cb4dfd7b443",
+      "name": "Extract main blocks"
+    },
+    {
+      "parameters": {
+        "operation": "extractHtmlContent",
+        "dataPropertyName": "info",
+        "extractionValues": {
+          "values": [
+            {
+              "key": "name",
+              "cssSelector": "h1"
+            },
+            {
+              "key": "category",
+              "cssSelector": "h2"
+            },
+            {
+              "key": "area_html",
+              "cssSelector": "h3",
+              "returnValue": "html"
+            },
+            {
+              "key": "summary",
+              "cssSelector": "h4"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        7712,
+        3728
+      ],
+      "id": "ebb82d04-9a70-45f9-8b4f-b53bb0ae0330",
+      "name": "Extract info"
+    },
+    {
+      "parameters": {
+        "operation": "extractHtmlContent",
+        "dataPropertyName": "about_us",
+        "extractionValues": {
+          "values": [
+            {
+              "key": "description",
+              "cssSelector": "p"
+            },
+            {
+              "key": "definitions",
+              "cssSelector": "dl > div",
+              "returnValue": "html",
+              "returnArray": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        7712,
+        4144
+      ],
+      "id": "37a841ff-ddda-446d-90d9-87b98b7ee973",
+      "name": "Extract about us"
+    },
+    {
+      "parameters": {
+        "operation": "extractHtmlContent",
+        "dataPropertyName": "employees",
+        "extractionValues": {
+          "values": [
+            {
+              "key": "employee",
+              "cssSelector": "ul li",
+              "returnValue": "html",
+              "returnArray": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        7504,
+        4432
+      ],
+      "id": "88a21864-8416-41b5-bef5-f9016e78d7b5",
+      "name": "Extract employees"
+    },
+    {
+      "parameters": {
+        "operation": "extractHtmlContent",
+        "dataPropertyName": "locations",
+        "extractionValues": {
+          "values": [
+            {
+              "key": "locations",
+              "cssSelector": "div[id^=\"address-\"]",
+              "returnArray": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        7712,
+        3952
+      ],
+      "id": "18e105e7-1895-4792-845d-e4110a8fa940",
+      "name": "Extract locations"
+    },
+    {
+      "parameters": {
+        "operation": "extractHtmlContent",
+        "dataPropertyName": "updates",
+        "extractionValues": {
+          "values": [
+            {
+              "key": "article",
+              "cssSelector": "div[data-id=\"entire-feed-card-link\"]",
+              "returnValue": "html",
+              "returnArray": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        7472,
+        4832
+      ],
+      "id": "57d5ccc2-b90d-459c-8777-fe5634f7b938",
+      "name": "Extract updates"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "4a990f72-dc16-464c-b35c-1573c38b2d18",
+              "leftValue": "={{ $json.products }}",
+              "rightValue": "",
+              "operator": {
+                "type": "array",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        7792,
+        5488
+      ],
+      "id": "26854397-0e04-4d29-94bd-ff7f1a78d800",
+      "name": "Are there products?"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "4b4a37dd-46e9-46f3-8dc6-1767a75375c2",
+              "leftValue": "={{ $json.affiliate_pages }}",
+              "rightValue": "",
+              "operator": {
+                "type": "array",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        7792,
+        5888
+      ],
+      "id": "b67db216-a9ab-4f4f-8fa9-2c7841d40890",
+      "name": "Are there affiliated pages?"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2fa0ab4a-ca7c-47ab-90cc-75f8fe83b372",
+              "name": "affiliate_pages",
+              "value": "[]",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        8704,
+        6096
+      ],
+      "id": "37a21b63-b4ca-4b66-95cb-a6d6dd05ffe2",
+      "name": "No affiliated pages"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6d5b89ba-9161-4999-bf63-8b0dad2d0f86",
+              "name": "products",
+              "value": "=[]",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        8704,
+        5648
+      ],
+      "id": "f3216b9c-a49b-433e-ad23-94a991344ed3",
+      "name": "No products"
+    },
+    {
+      "parameters": {
+        "operation": "extractHtmlContent",
+        "dataPropertyName": "products",
+        "extractionValues": {
+          "values": [
+            {
+              "key": "name",
+              "cssSelector": "h3",
+              "skipSelectors": "img"
+            },
+            {
+              "key": "category",
+              "cssSelector": "h4 a"
+            },
+            {
+              "key": "description",
+              "cssSelector": "p"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        8912,
+        5472
+      ],
+      "id": "03c79ef2-2ee7-4dce-b6fc-0685a2a35537",
+      "name": "Extract products"
+    },
+    {
+      "parameters": {
+        "operation": "extractHtmlContent",
+        "dataPropertyName": "affiliate_pages",
+        "extractionValues": {
+          "values": [
+            {
+              "key": "title",
+              "cssSelector": "h3"
+            },
+            {
+              "key": "link",
+              "cssSelector": "a",
+              "returnValue": "attribute",
+              "attribute": "href"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        8912,
+        5872
+      ],
+      "id": "88337367-d95f-4c67-8a1b-dcb0d4b8cf73",
+      "name": "Extract affiliated pages"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=<Instruction>\nOur company sells marketing services. We scraped a list of marketing jobs, and found the linkedin profile and other data points of the advertiser.\n\nCreate a summary about this prospect that can be shared in the company Slack for the sales team.\n\nThe important signals are\n1. The company is looking for a hire, use information from the job ad\n2. The company does have a team that we target\n\nAlso make sure information from their new updates are also extracted.\n\nThe structure of the message should have\n1. Name of the company\n2. Quick summary of the company\n3. Why it's a good prospect\n</Instruction>\n\n<JobAd>\n{{ $('Extract job ad').item.json.job_ad }}\n</JobAd>\n\n<Data>\n{{ JSON.stringify($json.data, null, 2) }}\n</Data>",
+        "hasOutputParser": true
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.6,
+      "position": [
+        11520,
+        5232
+      ],
+      "id": "4092c3d1-492d-4eff-b624-80cc5271e587",
+      "name": "Summarize available data",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "sendTo": "2rum2room2@gmail.com",
+        "subject": "=New prospect: {{ $('Aggregate3').item.json.data[0].name }}",
+        "message": "=<h1>Company name: {{ $('Aggregate3').item.json.data[0].name }}</h1>\n<p>Category: {{ $('Aggregate3').item.json.data[0].category }}</p>\n<p>Linkedin Page: {{ $('Set Linkedin URL from the first result').item.json.linkedin_url }}</p>\n<p>Website: {{ $('Aggregate3').item.json.data[0].Website }}</p>\n{{ $('Extract main blocks').item.json.crunchbase ? `<p>Crunchbase: ${$('Extract main blocks').item.json.crunchbase.split('?')[0]}</p>` : `` }}\n\n<h2>Summary</h2>\n<p>{{ $json.output.company_summary }}</p>\n<h2>Why is it a good prospect</h2>\n<p>{{ $json.output.why_good_prospect }}</p>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        11872,
+        5232
+      ],
+      "id": "ca788caa-de14-4038-aa46-b48f977f7d1e",
+      "name": "Send email",
+      "webhookId": "5239298c-8f8b-408b-bc7e-cc36cd3a59e8"
+    },
+    {
+      "parameters": {
+        "content": "# Use the data\n\nPush the collected data into\n\n- your CRM\n- Airtable\n- Google Sheets\n- Notion\n- postgres\n- ...",
+        "height": 760,
+        "width": 660
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        11424,
+        4896
+      ],
+      "id": "d33203da-f0d4-404d-a921-ea84122c44e6",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "# Extracting the data from LinkedIn\n\n## The CSS selectors could occasionally change - don't panic, very easy to fix, just replace them in the workflow. As of 25/4/10 these selectors are working",
+        "height": 3040,
+        "width": 4460
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        6672,
+        3424
+      ],
+      "id": "a2d57d34-d8ff-4a5c-b065-3285a65f1e3e",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "# Wait\n\n## To avoid being flagged or detected, wait some seconds before doing another scraping",
+        "height": 380,
+        "width": 440
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        12000,
+        6192
+      ],
+      "id": "47149d3d-eba8-489c-9415-5b1a1550e0a9",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        12160,
+        6384
+      ],
+      "id": "e759eccf-bedf-4d4d-9392-5f976a75bfd1",
+      "name": "Wait 5s",
+      "webhookId": "0c941134-e324-4857-8e36-2ded681a4b38"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "11f75f95-038e-49c4-b7b3-2eb765ad2d1b",
+              "name": "linkedin_url",
+              "value": "={{ $json.items[0].link }}",
+              "type": "string"
+            },
+            {
+              "id": "dd80b252-cd03-42f4-be70-069f565d046a",
+              "name": "description",
+              "value": "={{ $json.items[0].pagemap.metatags[0]['og:description'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        5904,
+        4848
+      ],
+      "id": "319f5a81-dbaf-43cd-85ec-46eabbb3ae00",
+      "name": "Set Linkedin URL from the first result"
+    },
+    {
+      "parameters": {
+        "jsCode": "for (const item of $input.all()) {\n  const companySlugMatch = item.json.linkedin_url.match(/[^linkedin]+linkedin\\.com\\/company\\/([^\\/]+)/);\n  if (companySlugMatch) {\n    const companySlug = companySlugMatch[1];\n    item.json.linkedin_url = `https://www.linkedin.com/company/${companySlug}`;\n  }\n}\n\nreturn $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        6112,
+        4848
+      ],
+      "id": "9a274c47-d88f-41a6-993f-0bc8deffa15b",
+      "name": "Clean linkedin url"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "d5e4966d-3cb0-409f-9878-d227d6515afb",
+              "leftValue": "={{ $json.location }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        5152,
+        4864
+      ],
+      "id": "8b1f95e6-e193-49df-9a12-2b921e788074",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "jsCode": "for (const item of $input.all()) {\n  if (item.json.info.includes('Location:')) {\n    const location = item.json.info.split('Location:')[1]\n  item.json.location = location.slice(0, location.length - 1).replace(/\\n/g, '').trim()\n  }\n  \n}\n\nreturn $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        6176,
+        4368
+      ],
+      "id": "4fe58f62-cd49-49c4-9dc2-0243f591c1f6",
+      "name": "Extract location data1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "8562b688-864d-47a2-9b04-08dffc8040fe",
+              "leftValue": "={{ $json.locations }}",
+              "rightValue": "",
+              "operator": {
+                "type": "array",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        9472,
+        3904
+      ],
+      "id": "00830004-c0a1-4f85-80ba-edc98c63c36c",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b94e6f5d-bbed-4b6b-b3f1-b23ff2fe5f16",
+              "name": "locations",
+              "value": "=[]",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        9712,
+        3984
+      ],
+      "id": "fefd4e69-acc0-45b2-845d-d98baadd51e4",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "17e760be-a45a-43e1-999f-18ac321dcdde",
+              "leftValue": "={{ $json.definitions }}",
+              "rightValue": "",
+              "operator": {
+                "type": "array",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        8176,
+        4144
+      ],
+      "id": "ed8d7f43-35b5-4939-9003-facdecc6ef11",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "905a9082-fd1e-4961-acdd-9233a3e15aa0",
+              "name": "description",
+              "value": "={{ $json.description }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        9232,
+        4272
+      ],
+      "id": "f1da88d1-2e0a-4ed5-bd24-81a245a33bb7",
+      "name": "Edit Fields4"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "2313cbcb-a3cc-4bd2-8d02-cad37db9473f",
+              "leftValue": "={{ $json.employees }}",
+              "rightValue": "",
+              "operator": {
+                "type": "array",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        7712,
+        4432
+      ],
+      "id": "42f427e4-25ef-4bf9-89d9-536c8e3c5cfd",
+      "name": "If3"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3e16c3b2-650c-4a58-b5fd-d138af9775ce",
+              "name": "employees",
+              "value": "=[]",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        9536,
+        4608
+      ],
+      "id": "258397e2-61f8-48c5-84e5-e6cd62fed585",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "9839990c-6444-433b-8dd9-42c1b264be1e",
+              "leftValue": "={{ $json.updates }}",
+              "rightValue": "",
+              "operator": {
+                "type": "array",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        7904,
+        4992
+      ],
+      "id": "da65cbfc-c252-4b3f-8d20-d3023c468620",
+      "name": "If4"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "98037fb5-6297-4970-810f-626219a27964",
+              "name": "updates",
+              "value": "=[]",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        8464,
+        5072
+      ],
+      "id": "3b54b829-11fd-42e7-8180-ba169706834a",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "content": "# Configure",
+        "height": 360,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        4016,
+        4224
+      ],
+      "id": "3eac7986-fce0-492d-8aa4-889040344905",
+      "name": "Sticky Note5"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Configure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "HTML5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTML5": {
+      "main": [
+        [
+          {
+            "node": "Code2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out1": {
+      "main": [
+        [
+          {
+            "node": "HTML7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTML7": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out2": {
+      "main": [
+        [
+          {
+            "node": "HTML9",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTML9": {
+      "main": [
+        [
+          {
+            "node": "Code3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code3": {
+      "main": [
+        [
+          {
+            "node": "Filter1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter1": {
+      "main": [
+        [
+          {
+            "node": "Aggregate1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code2": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "Aggregate1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 4
+          }
+        ]
+      ]
+    },
+    "Split Out3": {
+      "main": [
+        [
+          {
+            "node": "Extract products",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate2": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 5
+          }
+        ]
+      ]
+    },
+    "Split Out4": {
+      "main": [
+        [
+          {
+            "node": "Extract affiliated pages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate4": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 6
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Aggregate3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate3": {
+      "main": [
+        [
+          {
+            "node": "Summarize available data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Summarize available data",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Summarize available data",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Scrape the job ad",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Configure": {
+      "main": [
+        [
+          {
+            "node": "Get job board RSS feed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get job board RSS feed": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scrape the job ad": {
+      "main": [
+        [
+          {
+            "node": "Extract job ad",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract job ad": {
+      "main": [
+        [
+          {
+            "node": "Extract location data1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google X-Ray Search": {
+      "main": [
+        [
+          {
+            "node": "Results?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Results?": {
+      "main": [
+        [
+          {
+            "node": "Set Linkedin URL from the first result",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scrape LinkedIn": {
+      "main": [
+        [
+          {
+            "node": "Extract main blocks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract main blocks": {
+      "main": [
+        [
+          {
+            "node": "Extract info",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Extract locations",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Extract about us",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Extract employees",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Extract updates",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Are there products?",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Are there affiliated pages?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract info": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract about us": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract employees": {
+      "main": [
+        [
+          {
+            "node": "If3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract locations": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract updates": {
+      "main": [
+        [
+          {
+            "node": "If4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Are there products?": {
+      "main": [
+        [
+          {
+            "node": "Split Out3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No products",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Are there affiliated pages?": {
+      "main": [
+        [
+          {
+            "node": "Split Out4",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No affiliated pages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "No affiliated pages": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 6
+          }
+        ]
+      ]
+    },
+    "No products": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 5
+          }
+        ]
+      ]
+    },
+    "Extract products": {
+      "main": [
+        [
+          {
+            "node": "Aggregate2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract affiliated pages": {
+      "main": [
+        [
+          {
+            "node": "Aggregate4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarize available data": {
+      "main": [
+        [
+          {
+            "node": "Send email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send email": {
+      "main": [
+        [
+          {
+            "node": "Wait 5s",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 5s": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Linkedin URL from the first result": {
+      "main": [
+        [
+          {
+            "node": "Clean linkedin url",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clean linkedin url": {
+      "main": [
+        [
+          {
+            "node": "Scrape LinkedIn",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract location data1": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Google X-Ray Search",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields4": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "If3": {
+      "main": [
+        [
+          {
+            "node": "Split Out1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "If4": {
+      "main": [
+        [
+          {
+            "node": "Split Out2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 4
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "ef7c1143-e6ca-416b-a6c4-a872781b241b",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "3ea5ee65f04b27a744235742229cd33fb9bc1c1a8cd25b6ec8329b2619003115"
+  },
+  "id": "aABkxEso7UJYqtFW",
+  "tags": []
+}
