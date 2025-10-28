@@ -1,4 +1,4 @@
-# 🎯 LinkedIn Lead Generation from Job Boards 1
+# 🎯 LinkedIn Lead Generation from Job Boards 
 
 An intelligent n8n workflow that scrapes job boards, finds company LinkedIn profiles, extracts comprehensive company data, and generates AI-powered sales intelligence reports. Perfect for B2B lead generation and sales prospecting.
 
